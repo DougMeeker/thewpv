@@ -63,8 +63,8 @@ function rewriteHtml() {
   for (const f of htmlFiles) {
     let html = fs.readFileSync(f, 'utf8');
     const before = html;
-    // Remove any %3Fver=... or ?ver=... followed by optional extra extension
-    html = html.replace(/(href|src)=\"([^\"]+?)(%3F|\?)ver=[^\"#]+(\.[a-z0-9]+)?\"/gi, (m, attr, pathPart) => `${attr}="${pathPart}"`);
+    // Remove any %3Fver=... or ?ver=... followed by optional extra extension (double and single quotes)
+    html = html.replace(/(href|src)=([\"'])([^\"']+?)(%3F|\?)ver=[^\"'#]+(\.[a-z0-9]+)?\2/gi, (m, attr, q, pathPart) => `${attr}=${q}${pathPart}${q}`);
     if (html !== before) {
       fs.writeFileSync(f, html, 'utf8');
       changed++;
