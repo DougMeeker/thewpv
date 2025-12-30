@@ -19,3 +19,37 @@
 	<generator>https://wordpress.org/?v=5.8.12</generator>
 </channel>
 </rss>
+
+<script id="wpv-link-normalizer">
+(function(){
+  function collapse(p){
+    if(!p) return p;
+    // Collapse multiple slashes in path segments
+    p = p.replace(/\/{2,}/g, '/');
+    // Ensure single slash after project base
+    p = p.replace(/^(\/thewpv)\/+/,'$1/');
+    return p;
+  }
+  try {
+    var loc = window.location;
+    var normPath = collapse(loc.pathname);
+    if (normPath !== loc.pathname) {
+      history.replaceState(null, '', normPath + loc.search + loc.hash);
+    }
+  } catch(e) {}
+  function fixHref(a){
+    var href = a.getAttribute('href');
+    if (!href) return;
+    if (/^https?:\/\//i.test(href) || /^mailto:/i.test(href) || /^#/i.test(href)) return;
+    if (href.indexOf('/thewpv') === 0) {
+      var nh = collapse(href);
+      if (nh !== href) a.setAttribute('href', nh);
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    try {
+      document.querySelectorAll('a[href]').forEach(fixHref);
+    } catch(e) {}
+  });
+})();
+</script>
