@@ -73,6 +73,16 @@ function normalizeContent(html, fileDir) {
   html = html.replace(/<link[^>]+rel=[\"']canonical[\"'][^>]*>/gi, '');
   html = html.replace(/<link[^>]+rel=[\"']shortlink[\"'][^>]*>/gi, '');
 
+  // 6) Collapse duplicate slashes after BASE for href/src attributes
+  // Keep protocols like https:// intact by only targeting paths that start with BASE
+  for (const attr of ['href', 'src']) {
+    const re = new RegExp(`(${attr}=)(["'])${BASE.replace(/\//g, '\\/')}(.*?)\\2`, 'gi');
+    html = html.replace(re, (m, a, q, rest) => {
+      const normalized = String(rest).replace(/\/{2,}/g, '/');
+      return `${a}${q}${BASE}${normalized}${q}`;
+    });
+  }
+
   return html;
 }
 

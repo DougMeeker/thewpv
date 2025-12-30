@@ -51,6 +51,15 @@ function rewrite(html) {
     (m, sect, rest) => `href=\"${BASE}${sect}${rest}\"`);
   // home root
   out = out.replace(/href=([\"'])(\.|\/)\1/g, `href=\"${BASE}\"`);
+
+  // collapse duplicate slashes after BASE for href/src
+  for (const attr of ['href', 'src']) {
+    const re = new RegExp(`(${attr}=)([\"'])${BASE.replace(/\//g, '\\/')}(.*?)\\2`, 'gi');
+    out = out.replace(re, (m, a, q, rest) => {
+      const normalized = String(rest).replace(/\/{2,}/g, '/');
+      return `${a}${q}${BASE}${normalized}${q}`;
+    });
+  }
   return out;
 }
 
