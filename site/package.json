@@ -1,0 +1,13 @@
+{
+  "name": "westside-pacific-villages-site",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "eleventy",
+    "serve": "eleventy --serve --port=8080",
+    "check:links": "node scripts/check-local-links.js ./_site/index.html || node scripts/check-local-links.js ./_site/thewpv.org/index.html"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0"
+  }
+}
