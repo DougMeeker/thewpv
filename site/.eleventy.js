@@ -16,14 +16,22 @@ module.exports = function(eleventyConfig) {
     // Flatten domain-like folders (e.g., "thewpv.org") to the output root
     for (const d of entries) {
       if (d.isDirectory() && d.name.includes('.')) {
-        // Map the folder relative to input dir to the output root
-        eleventyConfig.addPassthroughCopy({ [d.name]: '.' });
+        // Map the folder under input dir to the output
+        const from = path.join(srcDir, d.name);
+        if (d.name.startsWith('www.')) {
+          // Avoid collision with the main domain's index.html: place www.* under its own subfolder
+          eleventyConfig.addPassthroughCopy({ [from]: d.name });
+        } else {
+          // Non-www domain goes to output root
+          eleventyConfig.addPassthroughCopy({ [from]: '.' });
+        }
       }
     }
   }
 
-  // Passthrough-copy the entire src directory to preserve mirrored structure (WordPress assets, etc.)
-  eleventyConfig.addPassthroughCopy(srcDir);
+  // Note: we avoid copying the entire src folder to _site/src; instead we
+  // place domain-named folders at the output root so paths like
+  // /wp-content/... resolve correctly under GitHub Pages project site base.
 
   eleventyConfig.setBrowserSyncConfig({
     open: false,
