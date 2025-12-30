@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "node scripts/sanitize-mirror.js",
     "build": "eleventy",
     "serve": "eleventy --serve --port=8080",
     "check:links": "node scripts/check-local-links.js ./_site/index.html || node scripts/check-local-links.js ./_site/thewpv.org/index.html"
