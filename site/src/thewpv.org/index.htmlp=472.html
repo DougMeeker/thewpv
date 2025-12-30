@@ -124,6 +124,37 @@ body.custom-background { background-color: #ffffff; }
       document.querySelectorAll('a[href]').forEach(fixHref);
     } catch(e) {}
   });
+  // Intercept clicks to ensure normalized navigation for internal links
+  document.addEventListener('click', function(ev){
+    var a = ev.target.closest && ev.target.closest('a[href]');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href) return;
+    if (/^https?:\/\//i.test(href) || /^mailto:/i.test(href)) return;
+    if (/^#/i.test(href)) return;
+    if (href.indexOf('/thewpv') === 0) {
+      var nh = collapse(href);
+      if (nh !== href) a.setAttribute('href', nh);
+      // Allow default navigation after normalization
+    }
+  }, true);
+  // Observe dynamic DOM changes to re-normalize anchors
+  try {
+    var obs = new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        if (m.type === 'attributes' && m.attributeName === 'href' && m.target && m.target.tagName === 'A') {
+          fixHref(m.target);
+        } else if (m.type === 'childList' && (m.addedNodes && m.addedNodes.length)) {
+          m.addedNodes.forEach(function(n){
+            if (n.querySelectorAll) {
+              n.querySelectorAll('a[href]').forEach(fixHref);
+            }
+          });
+        }
+      });
+    });
+    obs.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['href'] });
+  } catch(e) {}
 })();
 </script>
 </head>
