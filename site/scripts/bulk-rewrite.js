@@ -4,23 +4,24 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..', 'src', 'thewpv.org');
 
+const BASE = '/thewpv/';
 const map = {
-  'index.html%3Fp=20.html': '/about/mission/',
-  'index.html%3Fp=22.html': '/about/community-benefits/',
-  'index.html%3Fp=24.html': '/about/service-area/',
-  'index.html%3Fp=3397.html': '/about/transportation/',
-  'index.html%3Fp=28.html': '/about/boardandstaff/',
-  'index.html%3Fp=3512.html': '/newsletters/',
-  'index.html%3Fp=35.html': '/media/',
-  'index.html%3Fp=37.html': '/events/',
-  'index.html%3Fp=33.html': '/join/',
-  'index.html%3Fp=465.html': '/friend-application-form/',
-  'index.html%3Fp=472.html': '/membership-information-request/',
-  'index.html%3Fp=403.html': '/volunteer/',
-  'index.html%3Fp=2736.html': '/join/jobs/',
-  'index.html%3Fp=406.html': '/donate/',
-  'index.html%3Fp=3482.html': '/donate/legacy-circle/',
-  'index.html%3Fp=41.html': '/contact/'
+  'index.html%3Fp=20.html': BASE + 'about/mission/',
+  'index.html%3Fp=22.html': BASE + 'about/community-benefits/',
+  'index.html%3Fp=24.html': BASE + 'about/service-area/',
+  'index.html%3Fp=3397.html': BASE + 'about/transportation/',
+  'index.html%3Fp=28.html': BASE + 'about/boardandstaff/',
+  'index.html%3Fp=3512.html': BASE + 'newsletters/',
+  'index.html%3Fp=35.html': BASE + 'media/',
+  'index.html%3Fp=37.html': BASE + 'events/',
+  'index.html%3Fp=33.html': BASE + 'join/',
+  'index.html%3Fp=465.html': BASE + 'friend-application-form/',
+  'index.html%3Fp=472.html': BASE + 'membership-information-request/',
+  'index.html%3Fp=403.html': BASE + 'volunteer/',
+  'index.html%3Fp=2736.html': BASE + 'join/jobs/',
+  'index.html%3Fp=406.html': BASE + 'donate/',
+  'index.html%3Fp=3482.html': BASE + 'donate/legacy-circle/',
+  'index.html%3Fp=41.html': BASE + 'contact/'
 };
 
 const mapParent = Object.fromEntries(Object.entries(map).map(([k,v]) => [`../${k}`, v]));
@@ -42,9 +43,14 @@ function rewrite(html) {
   for (const [from, to] of Object.entries(mapParent)) {
     out = out.split(from).join(to);
   }
-  // normalize odd anchors
-  out = out.replace(/href=\"\.\/##\"/g, 'href="#"');
-  out = out.replace(/href=\"\.\/\#\"/g, 'href="#"');
+  // normalize odd anchors to project base
+  out = out.replace(/href=\"\.\/##\"/g, `href=\"${BASE}\"`);
+  out = out.replace(/href=\"\.\/\#\"/g, `href=\"${BASE}\"`);
+  // root-relative section links
+  out = out.replace(/href=\"\/(about|media|events|join|donate|contact|newsletters)(\/[^\"]*)\"/g,
+    (m, sect, rest) => `href=\"${BASE}${sect}${rest}\"`);
+  // home root
+  out = out.replace(/href=([\"'])(\.|\/)\1/g, `href=\"${BASE}\"`);
   return out;
 }
 

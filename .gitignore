@@ -2,3 +2,4 @@ mirror/
 site/_site/
 site/.cache/
 site/node_modules/
+artifact/

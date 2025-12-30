@@ -3,25 +3,26 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..', 'src', 'thewpv.org');
+const BASE = '/thewpv/';
 
 // Map WordPress query IDs to pretty paths available in the mirror
 const idToPath = new Map(Object.entries({
-  20: '/about/mission/',
-  22: '/about/community-benefits/', // Best-fit for "Services" section
-  24: '/about/service-area/',
-  28: '/about/boardandstaff/',
-  3397: '/about/transportation/',
-  3512: '/newsletters/',
-  35: '/media/',
-  37: '/events/',
-  33: '/join/',
-  465: '/friend-application-form/',
-  472: '/membership-information-request/',
-  403: '/volunteer/',
-  2736: '/join/jobs/',
-  406: '/donate/',
-  3482: '/donate/legacy-circle/',
-  41: '/contact/'
+  20: BASE + 'about/mission/',
+  22: BASE + 'about/community-benefits/',
+  24: BASE + 'about/service-area/',
+  28: BASE + 'about/boardandstaff/',
+  3397: BASE + 'about/transportation/',
+  3512: BASE + 'newsletters/',
+  35: BASE + 'media/',
+  37: BASE + 'events/',
+  33: BASE + 'join/',
+  465: BASE + 'friend-application-form/',
+  472: BASE + 'membership-information-request/',
+  403: BASE + 'volunteer/',
+  2736: BASE + 'join/jobs/',
+  406: BASE + 'donate/',
+  3482: BASE + 'donate/legacy-circle/',
+  41: BASE + 'contact/'
 }));
 
 function walk(dir, files = []) {
@@ -35,10 +36,10 @@ function walk(dir, files = []) {
 
 function normalizeContent(html, fileDir) {
   // 1) Fix HOME and menu links that point to mirrored www root
-  // Normalize odd HOME anchors to a simple '#'
-  html = html.replace(/href=\"\.\/##\"/gi, 'href="#"');
-  html = html.replace(/href=\"\.\/\#\"/gi, 'href="#"');
-  html = html.replace(/href=\"\.\.\/www\.thewpv\.org\/index\.html(#[^\"]*)?\"/gi, 'href="#"');
+  // Normalize odd HOME anchors
+  html = html.replace(/href=\"\.\/##\"/gi, `href="${BASE}"`);
+  html = html.replace(/href=\"\.\/\#\"/gi, `href="${BASE}"`);
+  html = html.replace(/href=\"\.\.\/www\.thewpv\.org\/index\.html(#[^\"]*)?\"/gi, `href="${BASE}"`);
 
   // 2) Rewrite encoded WP query links index.html%3Fp=ID(.html)?
   // Attribute-level rewrite for encoded query links
@@ -60,6 +61,13 @@ function normalizeContent(html, fileDir) {
     const p = idToPath.get(parseInt(id, 10));
     return p ? `${attr}${q}${p}${q}` : m;
   });
+
+  // Rewrite root-relative section links to include BASE
+  html = html.replace(/(href=)([\"'])(\/)(about|media|events|join|donate|contact|newsletters)(\/[^\"']*)\2/gi,
+    (m, attr, q, slash, section, rest) => `${attr}${q}${BASE}${section}${rest}${q}`);
+
+  // Rewrite homepage root link variants to BASE
+  html = html.replace(/href=([\"'])(\.|\/)\1/gi, `href="${BASE}"`);
 
   // 5) Avoid any accidental absolute redirect base tags (remove canonical/shortlink leftovers)
   html = html.replace(/<link[^>]+rel=[\"']canonical[\"'][^>]*>/gi, '');
