@@ -6,22 +6,22 @@ const ROOT = path.join(__dirname, '..', 'src', 'thewpv.org');
 
 // Map WordPress query IDs to pretty paths available in the mirror
 const idToPath = new Map(Object.entries({
-  20: 'about/mission/',
-  22: 'about/community-benefits/', // Best-fit for "Services" section
-  24: 'about/service-area/',
-  28: 'about/boardandstaff/',
-  3397: 'about/transportation/',
-  3512: 'newsletters/',
-  35: 'media/',
-  37: 'events/',
-  33: 'join/',
-  465: 'friend-application-form/',
-  472: 'membership-information-request/',
-  403: 'volunteer/',
-  2736: 'join/jobs/',
-  406: 'donate/',
-  3482: 'donate/legacy-circle/',
-  41: 'contact/'
+  20: '/about/mission/',
+  22: '/about/community-benefits/', // Best-fit for "Services" section
+  24: '/about/service-area/',
+  28: '/about/boardandstaff/',
+  3397: '/about/transportation/',
+  3512: '/newsletters/',
+  35: '/media/',
+  37: '/events/',
+  33: '/join/',
+  465: '/friend-application-form/',
+  472: '/membership-information-request/',
+  403: '/volunteer/',
+  2736: '/join/jobs/',
+  406: '/donate/',
+  3482: '/donate/legacy-circle/',
+  41: '/contact/'
 }));
 
 function walk(dir, files = []) {
@@ -35,24 +35,30 @@ function walk(dir, files = []) {
 
 function normalizeContent(html, fileDir) {
   // 1) Fix HOME and menu links that point to mirrored www root
-  html = html.replace(/href=\"\.\.\/www\.thewpv\.org\/index\.html(#[^\"]*)?\"/gi, (m, hash = '') => `href="./${hash || ''}"`);
+  // Normalize odd HOME anchors to a simple '#'
+  html = html.replace(/href=\"\.\/##\"/gi, 'href="#"');
+  html = html.replace(/href=\"\.\/\#\"/gi, 'href="#"');
+  html = html.replace(/href=\"\.\.\/www\.thewpv\.org\/index\.html(#[^\"]*)?\"/gi, 'href="#"');
 
   // 2) Rewrite encoded WP query links index.html%3Fp=ID(.html)?
-  html = html.replace(/index\.html%3Fp=(\d+)(?:\.html)?/gi, (_, id) => {
-    const p = idToPath.get(id*1);
-    return p ? p : _;
+  // Attribute-level rewrite for encoded query links
+  html = html.replace(/(href=)(["'])([^\2]*?)index\.html%3Fp=(\d+)(?:\.html)?\2/gi, (m, attr, q, pre, id) => {
+    const p = idToPath.get(parseInt(id, 10));
+    return p ? `${attr}${q}${p}${q}` : m;
   });
 
   // 3) Rewrite plain WP query links index.html?p=ID
-  html = html.replace(/index\.html\?p=(\d+)/gi, (_, id) => {
-    const p = idToPath.get(id*1);
-    return p ? p : _;
+  // Attribute-level rewrite for plain query links
+  html = html.replace(/(href=)(["'])([^\2]*?)index\.html\?p=(\d+)\2/gi, (m, attr, q, pre, id) => {
+    const p = idToPath.get(parseInt(id, 10));
+    return p ? `${attr}${q}${p}${q}` : m;
   });
 
   // 4) Rewrite parent-relative versions ../index.html%3Fp=ID(.html)?
-  html = html.replace(/\.\.\/index\.html%3Fp=(\d+)(?:\.html)?/gi, (_, id) => {
-    const p = idToPath.get(id*1);
-    return p ? (p.startsWith('/') ? `.${p}` : p) : _;
+  // Parent-relative encoded links
+  html = html.replace(/(href=)(["'])([^\2]*?)\.\.\/index\.html%3Fp=(\d+)(?:\.html)?\2/gi, (m, attr, q, pre, id) => {
+    const p = idToPath.get(parseInt(id, 10));
+    return p ? `${attr}${q}${p}${q}` : m;
   });
 
   // 5) Avoid any accidental absolute redirect base tags (remove canonical/shortlink leftovers)
