@@ -1,22 +1,24 @@
 const fs = require("fs");
 const path = require("path");
 
-// All generated files live under this base folder so the site can be hosted from
-// a project-level path like /thewpv on GitHub Pages.
-const PROJECT_BASE = "thewpv";
+// GitHub Pages already serves the project at /thewpv, so we keep the output
+// flat (no extra thewpv/ folder) and only prefix links in templates.
+const PROJECT_BASE = "";
 
 module.exports = function(eleventyConfig) {
   const srcDir = "src";
 
+  const targetBase = PROJECT_BASE || ".";
+
   // Passthrough common asset directories to avoid processing. Assets are placed
-  // under the project base so they resolve from /thewpv/assets/... when hosted
-  // from a project site path.
+  // under the target base so they resolve correctly when hosted from a project
+  // site path.
   if (fs.existsSync(srcDir)) {
     const entries = fs.readdirSync(srcDir, { withFileTypes: true });
     for (const d of entries) {
       if (d.isDirectory() && (d.name.toLowerCase() === "assets" || d.name.endsWith("_files"))) {
         eleventyConfig.addPassthroughCopy({
-          [path.join(srcDir, d.name)]: path.join(PROJECT_BASE, d.name)
+          [path.join(srcDir, d.name)]: path.join(targetBase, d.name)
         });
       }
     }
@@ -27,9 +29,9 @@ module.exports = function(eleventyConfig) {
       if (d.isDirectory() && d.name.includes('.')) {
         const from = path.join(srcDir, d.name);
         if (d.name.startsWith('www.')) {
-          eleventyConfig.addPassthroughCopy({ [from]: path.join(PROJECT_BASE, d.name) });
+          eleventyConfig.addPassthroughCopy({ [from]: path.join(targetBase, d.name) });
         } else {
-          eleventyConfig.addPassthroughCopy({ [from]: PROJECT_BASE });
+          eleventyConfig.addPassthroughCopy({ [from]: targetBase });
         }
       }
     }

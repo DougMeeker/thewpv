@@ -1,5 +1,6 @@
 {% set base = base | default('/thewpv/') %}
 {% set pageTitle = (title ~ ' | Westside Pacific Villages') if title else 'Westside Pacific Villages' %}
+{% set current = page.url or '/' %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -40,7 +41,8 @@
       <nav id="site-nav" class="nav">
         <ul class="nav-list">
           {% for item in navItems %}
-            {% set active = page.url and page.url.startsWith(item.href) %}
+            {% set hrefNoBase = item.href | replace(base, '/') %}
+            {% set active = current == item.href or current == hrefNoBase or current.startsWith(hrefNoBase) %}
             <li class="nav-item{% if active %} is-active{% endif %}">
               <a href="{{ item.href }}" {% if active %}aria-current="page"{% endif %}>{{ item.label }}</a>
             </li>
