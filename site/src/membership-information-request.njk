@@ -1,0 +1,45 @@
+---
+layout: base.njk
+base: /thewpv/
+title: Membership Information Request
+description: Request information about becoming a WPV member.
+permalink: /membership-information-request/index.html
+formUrl: https://docs.google.com/forms/d/e/1FAIpQLSc4TtWPYmyAP0Dms7-Fd_tJJA08V8Y59Tns467wyriGtMHKyQ/viewform?embedded=true
+---
+<section class="hero">
+  <div class="shell hero-inner">
+    <div>
+      <div class="badge">Membership</div>
+      <h1>Request membership information</h1>
+      <p class="lede">Share your details and we will reach out to help you join and set up payment.</p>
+      <div class="actions">
+        <a class="btn btn-accent" href="mailto:info@thewpv.org">Email WPV</a>
+        <a class="btn btn-secondary" href="tel:13106957030">Call 310-695-7030</a>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Prefer to talk first?</h3>
+      <p>Call us and we will walk you through the membership options and next steps.</p>
+      <p><strong>Phone:</strong> <a href="tel:13106957030">310-695-7030</a><br><strong>Email:</strong> <a href="mailto:info@thewpv.org">info@thewpv.org</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="shell">
+    <div class="panel">
+      <h2>Membership information form</h2>
+      <p>Complete the form below and we will contact you to finalize your membership.</p>
+      <div style="position: relative; padding-top: 0; min-height: 1100px;">
+        <iframe
+          src="{{ formUrl }}"
+          style="border:0; width:100%; height:1100px;"
+          loading="lazy"
+          title="Membership information request form"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <p class="muted">If the form does not load, <a href="{{ formUrl }}" target="_blank" rel="noreferrer">open it in a new tab</a>.</p>
+    </div>
+  </div>
+</section>
