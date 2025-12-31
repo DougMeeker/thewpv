@@ -1,0 +1,99 @@
+{% set base = base | default('/thewpv/') %}
+{% set pageTitle = (title ~ ' | Westside Pacific Villages') if title else 'Westside Pacific Villages' %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ pageTitle }}</title>
+  {% if description %}<meta name="description" content="{{ description }}">{% endif %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ base }}assets/theme.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-bar">
+      <a class="brand" href="{{ base }}" aria-label="Westside Pacific Villages home">
+        <img src="{{ base }}wp-content/uploads/2024/09/WPV-High-Res-PNG-02-01-480x260.png" alt="Westside Pacific Villages logo" class="brand-mark">
+        <div class="brand-text">
+          <span class="brand-kicker">Neighbors helping neighbors</span>
+          <span class="brand-name">Westside Pacific Villages</span>
+        </div>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="sr-only">Toggle navigation</span>
+      </button>
+      {% set navItems = [
+        { href: base, label: 'Home' },
+        { href: base + 'about/mission/', label: 'About' },
+        { href: base + 'events/', label: 'Events' },
+        { href: base + 'join/', label: 'Join' },
+        { href: base + 'volunteer/', label: 'Volunteer' },
+        { href: base + 'donate/', label: 'Donate' },
+        { href: base + 'contact/', label: 'Contact' }
+      ] %}
+      <nav id="site-nav" class="nav">
+        <ul class="nav-list">
+          {% for item in navItems %}
+            {% set active = page.url and page.url.startsWith(item.href) %}
+            <li class="nav-item{% if active %} is-active{% endif %}">
+              <a href="{{ item.href }}" {% if active %}aria-current="page"{% endif %}>{{ item.label }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+        <a class="btn btn-accent" href="{{ base }}donate/">Donate</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="site-main">
+    {{ content | safe }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div>
+        <p class="footer-title">Westside Pacific Villages</p>
+        <p>8939 S Sepulveda Blvd Suite 233<br>Los Angeles, CA 90045-3647</p>
+        <p class="footer-contact"><a href="tel:13106957030">310-695-7030</a><br><a href="mailto:info@thewpv.org">info@thewpv.org</a></p>
+      </div>
+      <div>
+        <p class="footer-title">Connect</p>
+        <div class="social">
+          <a href="https://www.facebook.com/WestsidePacificVillages" target="_blank" rel="noreferrer">Facebook</a>
+          <a href="https://instagram.com/westsidepacificvillages?utm_medium=copy_link" target="_blank" rel="noreferrer">Instagram</a>
+          <a href="https://www.linkedin.com/company/westchester-playa-village" target="_blank" rel="noreferrer">LinkedIn</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-title">Stay in touch</p>
+        <p>Monthly updates on events, volunteer opportunities, and neighborhood news.</p>
+        <a class="btn btn-ghost" href="{{ base }}newsletters/">Browse newsletters</a>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <div class="shell meta-inner">
+        <span>© {{ '' | year }} Westside Pacific Villages</span>
+        <span>Neighbors helping neighbors.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      var toggle = document.querySelector('.nav-toggle');
+      var nav = document.getElementById('site-nav');
+      if (!toggle || !nav) return;
+      toggle.addEventListener('click', function() {
+        var isOpen = nav.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+    })();
+  </script>
+</body>
+</html>

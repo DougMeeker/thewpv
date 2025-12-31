@@ -1,42 +1,51 @@
 const fs = require("fs");
 const path = require("path");
 
+// All generated files live under this base folder so the site can be hosted from
+// a project-level path like /thewpv on GitHub Pages.
+const PROJECT_BASE = "thewpv";
+
 module.exports = function(eleventyConfig) {
   const srcDir = "src";
 
-  // Passthrough common asset directories to avoid processing
+  // Passthrough common asset directories to avoid processing. Assets are placed
+  // under the project base so they resolve from /thewpv/assets/... when hosted
+  // from a project site path.
   if (fs.existsSync(srcDir)) {
     const entries = fs.readdirSync(srcDir, { withFileTypes: true });
     for (const d of entries) {
       if (d.isDirectory() && (d.name.toLowerCase() === "assets" || d.name.endsWith("_files"))) {
-        eleventyConfig.addPassthroughCopy(path.join(srcDir, d.name));
+        eleventyConfig.addPassthroughCopy({
+          [path.join(srcDir, d.name)]: path.join(PROJECT_BASE, d.name)
+        });
       }
     }
 
-    // Flatten domain-like folders (e.g., "thewpv.org") to the output root
+    // Flatten domain-like folders (e.g., "thewpv.org") into the project base
+    // so all pages and assets live under /thewpv.
     for (const d of entries) {
       if (d.isDirectory() && d.name.includes('.')) {
-        // Map the folder under input dir to the output
         const from = path.join(srcDir, d.name);
         if (d.name.startsWith('www.')) {
-          // Avoid collision with the main domain's index.html: place www.* under its own subfolder
-          eleventyConfig.addPassthroughCopy({ [from]: d.name });
+          eleventyConfig.addPassthroughCopy({ [from]: path.join(PROJECT_BASE, d.name) });
         } else {
-          // Non-www domain goes to output root
-          eleventyConfig.addPassthroughCopy({ [from]: '.' });
+          eleventyConfig.addPassthroughCopy({ [from]: PROJECT_BASE });
         }
       }
     }
   }
 
-  // Note: we avoid copying the entire src folder to _site/src; instead we
-  // place domain-named folders at the output root so paths like
-  // /wp-content/... resolve correctly under GitHub Pages project site base.
+  // Note: we avoid copying the entire src folder to _site/src; instead we copy
+  // mirrored domain folders into the project base so paths like
+  // /thewpv/wp-content/... resolve correctly when deployed to a project site.
 
   eleventyConfig.setBrowserSyncConfig({
     open: false,
     port: 8080
   });
+
+  // Simple year filter for templates
+  eleventyConfig.addFilter("year", () => new Date().getFullYear());
 
   return {
     dir: {

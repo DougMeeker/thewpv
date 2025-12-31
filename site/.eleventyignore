@@ -1,0 +1,8 @@
+# Skip mirrored pages that are now rebuilt as Eleventy templates
+src/thewpv.org/index.html
+src/thewpv.org/about/mission/index.html
+src/thewpv.org/join/index.html
+src/thewpv.org/volunteer/index.html
+src/thewpv.org/donate/index.html
+src/thewpv.org/contact/index.html
+src/thewpv.org/events/index.html
