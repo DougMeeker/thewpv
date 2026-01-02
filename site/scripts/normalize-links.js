@@ -39,7 +39,8 @@ function normalizeContent(html, fileDir) {
   // Normalize odd HOME anchors
   html = html.replace(/href=\"\.\/##\"/gi, `href="${BASE}"`);
   html = html.replace(/href=\"\.\/\#\"/gi, `href="${BASE}"`);
-  html = html.replace(/href=\"\.\.\/www\.thewpv\.org\/index\.html(#[^\"]*)?\"/gi, `href="${BASE}"`);
+  // Match any depth of relative paths to www.thewpv.org/index.html (../, ../../, ../../../, etc.)
+  html = html.replace(/href=\"(?:\.\.\/)+www\.thewpv\.org\/index\.html(#[^\"]*)?\"/gi, `href="${BASE}"`);
 
   // 2) Rewrite encoded WP query links index.html%3Fp=ID(.html)?
   // Attribute-level rewrite for encoded query links
