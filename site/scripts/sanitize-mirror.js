@@ -2,25 +2,31 @@
 const fs = require('fs');
 const path = require('path');
 
-const target = path.join(__dirname, '..', 'src', 'thewpv.org', 'index.html');
-if (!fs.existsSync(target)) {
-  console.error('[WARN] sanitize: index not found at', target);
-  process.exit(0);
+// Temporarily rename WordPress snapshot pages that are replaced by Eleventy templates
+// This prevents them from being copied by passthrough while keeping them in git
+const pagesToRename = [
+  'src/thewpv.org/index.html',
+  'src/thewpv.org/about/mission/index.html',
+  'src/thewpv.org/join/index.html',
+  'src/thewpv.org/volunteer/index.html',
+  'src/thewpv.org/donate/index.html',
+  'src/thewpv.org/contact/index.html',
+  'src/thewpv.org/events/index.html',
+  'src/thewpv.org/membership-information-request/index.html'
+];
+
+let renamed = 0;
+for (const page of pagesToRename) {
+  const pagePath = path.join(__dirname, '..', page);
+  const backupPath = pagePath + '.wpbackup';
+  
+  if (fs.existsSync(pagePath)) {
+    // Rename to .wpbackup extension
+    fs.renameSync(pagePath, backupPath);
+    renamed++;
+  }
 }
 
-let html = fs.readFileSync(target, 'utf8');
+console.log(`[INFO] sanitize: renamed ${renamed} WordPress snapshot page(s) to avoid passthrough copy`);
 
-// Remove canonical and shortlink tags (avoid SEO redirects or confused crawlers)
-html = html.replace(/<link[^>]+rel=[\"']canonical[\"'][^>]*>/gi, '');
-html = html.replace(/<link[^>]+rel=[\"']shortlink[\"'][^>]*>/gi, '');
 
-// Neutralize Divi resource fallback to absolute domain
-html = html.replace(/var\s+et_site_url\s*=\s*['\"]https:\/\/thewpv\.org['\"]/i, "var et_site_url=''");
-
-// Fix menu links pointing to www.thewpv.org index
-html = html.replace(/href=\"\.\.\/www\.thewpv\.org\/index\.html\#\#\"/gi, 'href="./##"');
-html = html.replace(/href=\"\.\.\/www\.thewpv\.org\/index\.html\#/gi, 'href="./#');
-html = html.replace(/href=\"\.\.\/www\.thewpv\.org\/index\.html\"/gi, 'href="./"');
-
-fs.writeFileSync(target, html, 'utf8');
-console.log('[INFO] sanitize: updated', target);

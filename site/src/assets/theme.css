@@ -203,7 +203,10 @@ img {
 }
 
 .hero-inner {
-  background: linear-gradient(135deg, rgba(11, 107, 140, 0.1), rgba(244, 176, 0, 0.08)), var(--surface);
+  background: 
+    linear-gradient(135deg, rgba(11, 107, 140, 0.85), rgba(244, 176, 0, 0.7)),
+    url('images/home-hero.svg') center/cover no-repeat,
+    var(--surface);
   border-radius: 28px;
   padding: 2.4rem;
   box-shadow: var(--shadow);

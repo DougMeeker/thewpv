@@ -1,0 +1,21 @@
+<svg width="1200" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with WPV colors -->
+  <defs>
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:rgb(11,107,140);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgb(244,176,0);stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="1200" height="600" fill="url(#heroGradient)" />
+  
+  <!-- Decorative elements -->
+  <circle cx="200" cy="150" r="80" fill="rgba(255,255,255,0.1)" />
+  <circle cx="1000" cy="450" r="120" fill="rgba(255,255,255,0.1)" />
+  
+  <!-- Text -->
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" 
+        fill="white" text-anchor="middle">Westside Pacific Villages</text>
+  <text x="600" y="340" font-family="Arial, sans-serif" font-size="32" 
+        fill="white" text-anchor="middle" opacity="0.9">Neighbors Helping Neighbors</text>
+</svg>
